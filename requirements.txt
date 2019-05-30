@@ -6,3 +6,4 @@ Jinja2==2.10
 MarkupSafe==1.0
 pyshp==2.1.0
 Werkzeug==0.15.2
+gunicorn==19.9.0
