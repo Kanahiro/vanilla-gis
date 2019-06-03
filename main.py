@@ -10,7 +10,7 @@ def index():
 	return render_template('index.html')
 
 @app.route('/', methods=["POST"])
-#TODO SHP,GEOJSON以外にも対応（CSV）
+#TODO SHP,GEOJSON以外にも対応（CSV）、ラスター対応
 def return_geojson():
 	file = request.files['datafile']
 	mimetype = file.filename.lower()
@@ -21,6 +21,15 @@ def return_geojson():
 		geojson = zipped_shp_to_geojson(file)
 	return jsonify(geojson)
 
+#DBにオーバーレイを保存する
+#DBにはpickledされたleafletのlayersオブジェクトを保存する
+@app.route('/save', methods=["POST"])
+def save_overlay():
+	geojsons = request.form['geojsons']
+	#DBにカスタムレイヤーを追加する処理
+	#geojsonsはGeoJSONデータをStringに変換している
+	#StringをDBに保存
+	return "OK"
 
 if __name__ == '__main__':
 	app.run()

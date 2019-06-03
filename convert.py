@@ -15,7 +15,9 @@ def zipped_shp_to_geojson(zipped_shp):
 	shx_file_bytes = zipped_files.read(shp_name + '.shx')
 	dbf_file_bytes = zipped_files.read(shp_name + '.dbf')
 
-	geojson = []
+	geojson = dict(name=shp_name,
+					type="FeatureCollection",
+					features=[])
 	#pyshpはライブラリ内部でデコードするので、正しいエンコーディングでデコード出来るまでループ
 	for codec in CODECS:
 		try:
@@ -28,13 +30,12 @@ def zipped_shp_to_geojson(zipped_shp):
 			for sr in reader.shapeRecords():
 				atr = dict(zip(field_names, sr.record))
 				geom = sr.shape.__geo_interface__
-				geojson.append(dict(type="Feature", \
+				geojson['features'].append(dict(type="Feature", \
 				 geometry=geom, properties=atr))
-			print(codec + 'encoding is correct.' )	
+			print(codec + 'encoding is correct.' )
 			break
 		except UnicodeDecodeError:
 			print(codec + 'is not suitable for this file.')
 			continue
 	return geojson
-
 #TODO CSV対応
