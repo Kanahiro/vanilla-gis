@@ -14,10 +14,7 @@ function onDrop(event) {
     event.preventDefault();
 
     //地物追加処理中にアニメーションを再生
-    console.log('animation start');
-    var animation_url = "https://www.asus.com/support/images/support-loading.gif";
-    var loading_animation_html = "<img src='"+ animation_url + "' height='50px' width='50px'>";
-    mini_window.innerHTML = loading_animation_html;
+    animationStart();
 
     // ドロップされたファイルのfilesプロパティを参照
     var files = event.dataTransfer.files;
@@ -50,6 +47,7 @@ function get_geojson(f) {
 }
 
 function add_geojson(geojson){
+    animationStart();
     var randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
     var myStyle = {
         "color": randomColor,
@@ -80,4 +78,11 @@ function add_geojson(geojson){
     //地物追加処理終了時にアニメーションを削除
     console.log('animation stop');
     mini_window.innerHTML = "";
+}
+
+function animationStart(){
+    console.log('animation start');
+    var animation_url = "https://www.asus.com/support/images/support-loading.gif";
+    var loading_animation_html = "<img src='"+ animation_url + "' height='50px' width='50px'>";
+    mini_window.innerHTML = loading_animation_html;
 }

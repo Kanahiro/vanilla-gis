@@ -10,4 +10,13 @@
 <script type='text/javascript' src='{{url_for("static", filename="js/index/map_components.js")}}'></script>
 <script type='text/javascript' src='{{url_for("static", filename="js/index/data_import.js")}}'></script>
 <script type='text/javascript' src='{{url_for("static", filename="js/index/data_export.js")}}'></script>
+<script type='text/javascript'>
+	mapTitle = "{{map_title}}";
+	authorName = "{{author_name}}";
+	var custom_layers = {{layers|tojson}};
+	for (layer_num in custom_layers) {
+		console.log(custom_layers[layer_num].name);
+		add_geojson(custom_layers[layer_num]);
+	};
+</script>
 {% endblock %}

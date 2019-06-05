@@ -46,11 +46,12 @@ def save_overlay():
 	print(session.query(Custom_overlay).all())
 	return "OK"
 
+#TODO パスワード設定
 @app.route('/user_map/<map_id>')
 def custom_map(map_id):
 	map = session.query(Custom_overlay).get(map_id)
 	parsed_json = json.loads(map.layers)
-	return render_template('index.html',map_title=map.title, author_name=map.author, layers=parsed_json)
+	return render_template('usermap.html',map_title=map.title, author_name=map.author, layers=parsed_json)
 
 
 if __name__ == '__main__':
