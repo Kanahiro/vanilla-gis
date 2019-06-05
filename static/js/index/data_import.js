@@ -50,14 +50,13 @@ function get_geojson(f) {
 }
 
 function add_geojson(geojson){
-    var shapes = geojson;
     var randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
     var myStyle = {
         "color": randomColor,
         "weight": 1,
         "opacity": 0.65
     };
-    var geojson_layer = L.geoJSON(shapes,{
+    var geojson_layer = L.geoJSON(geojson,{
                         style:myStyle,
                          onEachFeature: function (feature, layer) {
                             //地物ごとにプロパティをポップアップに表示(HTML)
@@ -73,8 +72,9 @@ function add_geojson(geojson){
         function(feature){
         }
     );
+    geojson_layer.name = geojson.name
     //GEOJSONレイヤーをオーバーレイレイヤーに追加（layer_controlはmain.jsで定義）
-    layer_control.addOverlay(geojson_layer,geojson.name);
+    layer_control.addOverlay(geojson_layer,geojson_layer.name);
     map.addLayer(geojson_layer);
     custom_layer_group.push(geojson_layer);
     //地物追加処理終了時にアニメーションを削除

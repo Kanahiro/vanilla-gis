@@ -1,7 +1,7 @@
 L.control.custom({
     position: 'bottomright',
     content : '<div>'+
-                '地図のタイトルがはいるよ@kigchi999'+
+                mapTitle + '<a href="https://twitter.com/'+ authorName + '">@' + authorName + '</a>' +
               '</div>',
     classes : 'card',
     style   :
@@ -34,7 +34,7 @@ L.control.custom({
 L.control.custom({
     position: 'bottomright',
     content : '<div>'+
-                'エクスポート'+
+                'URL生成'+
               '</div>',
     classes : 'card',
     style   :
@@ -48,12 +48,7 @@ L.control.custom({
     {
         click: function(data)
         {
-            var export_geojsons = []
-            for (layer_num in custom_layer_group) {
-                export_geojsons.push(custom_layer_group[layer_num].toGeoJSON())
-            }
-            console.log(export_geojsons);
-            send_layers_to_python(export_geojsons);
+            send_layers_to_python();
         },
         dblclick: function(data)
         {

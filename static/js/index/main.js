@@ -1,4 +1,6 @@
 //LEAFLET.JS
+	var mapTitle = "地図タイトル"
+	var authorName = "kigchi999"
 	//ベースレイヤーを定義
 	var osm_layer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
 	    attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',  });
@@ -16,8 +18,8 @@
 	var handwriting_layer = L.featureGroup();
 	attribution: ''
 	var overlay_layer = {
-		"手書きレイヤー":handwriting_layer,
 		"傾斜量図":kokudoContour_layer,
+		"手書きレイヤー":handwriting_layer,
 	}
 
 	//ユーザーが追加したレイヤー
@@ -37,5 +39,3 @@
 	var layer_control = L.control.layers(base_layer,overlay_layer,
 										{"collapsed":false,});
 	layer_control.addTo(map);
-	console.log(layer_control.getContainer());
-	console.log($('.leaflet-control-layers').html());
