@@ -1,6 +1,6 @@
-import json, io
+import json, io, datetime, codecs
 
-from flask import Flask, render_template, request, jsonify, make_response
+from flask import Flask, render_template, request, jsonify, make_response, send_file
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -10,17 +10,17 @@ from decode import decode_to_geojson
 from models import Custom_overlay
 
 app = Flask(__name__)
-engine = create_engine('sqlite:///db.sqlite3')  # custom_overlay.db というデータベースを使うという宣言です
+engine = create_engine('sqlite:///db.sqlite3') #define the database will be used
 SessionMaker = sessionmaker(bind=engine)
 session = scoped_session(SessionMaker)
 
 @app.route('/')
 def index():
-	return render_template('index.html',map_title="", author_name="", layers=[])
+	return render_template('index.html')
 
 @app.route('/', methods=["POST"])
 #TODO SHP,GEOJSON以外にも対応（CSV）、ラスター対応
-def return_geojson():
+def convert_to_geojson():
 	file = request.files['datafile']
 	mimetype = file.filename.lower()
 	geojson = None
@@ -30,18 +30,31 @@ def return_geojson():
 		geojson = zipped_shp_to_geojson(file)
 	return jsonify(geojson)
 
-#DBにオーバーレイを保存する
-#DBにはpickledされたleafletのlayersオブジェクトを保存する
+@app.route('/export', methods=["POST"])
+def export_geojson():
+	#受信
+	map_title = request.form['mapTitle']
+	geojsons = request.form['geojsons']
+	#受信データ処理と送信
+	geojson = json.loads(geojsons)
+	geojson_file = io.StringIO()
+	json.dump(geojson, geojson_file, indent=4)
+	downloadFileName = "test.geojson"
+	response = make_response()
+	response.data = geojson_file.getvalue()
+	response.headers['Content-Disposition'] = 'attachment; filename=' + downloadFileName
+	return response
+
+#DBにレイヤーグループを保存する
 @app.route('/save', methods=["POST"])
 def save_overlay():
+	#DBにレイヤーグループを追加する処理
+	#geojsonsはGeoJSONデータがStringに変換されたもの
 	map_title = request.form['mapTitle']
 	author_name = request.form['authorName']
 	geojsons = request.form['geojsons']
-	#DBにカスタムレイヤーを追加する処理
-	#geojsonsはGeoJSONデータをStringに変換している
-	#StringをDBに保存
-	new_map = Custom_overlay(title=map_title, author=author_name, layers=geojsons)
-	session.add(new_map)
+	new_custom_map = Custom_overlay(title=map_title, author=author_name, layers=geojsons)
+	session.add(new_custom_map)
 	session.commit()
 	print(session.query(Custom_overlay).all())
 	return "OK"
@@ -52,7 +65,6 @@ def custom_map(map_id):
 	map = session.query(Custom_overlay).get(map_id)
 	parsed_json = json.loads(map.layers)
 	return render_template('usermap.html',map_title=map.title, author_name=map.author, layers=parsed_json)
-
 
 if __name__ == '__main__':
 	app.run()

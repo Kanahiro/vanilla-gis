@@ -10,11 +10,13 @@ import shapefile, io, zipfile
 def zipped_shp_to_geojson(zipped_shp):
 	zipped_files = zipfile.ZipFile(zipped_shp)
 	shp_name = zipped_shp.filename[:-4]
-	#TODO shapefile適合判定
-	shp_file_bytes = zipped_files.read(shp_name + '.shp')
-	shx_file_bytes = zipped_files.read(shp_name + '.shx')
-	dbf_file_bytes = zipped_files.read(shp_name + '.dbf')
-
+	#shapefile読み込みと適合判定
+	try:
+		shp_file_bytes = zipped_files.read(shp_name + '.shp')
+		shx_file_bytes = zipped_files.read(shp_name + '.shx')
+		dbf_file_bytes = zipped_files.read(shp_name + '.dbf')
+	except:
+		return "Imported file was not apropriate Shape-Zip-File."
 	geojson = dict(name=shp_name,
 					type="FeatureCollection",
 					features=[])
