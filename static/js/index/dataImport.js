@@ -64,7 +64,7 @@ function addGeojson(geojson){
     var randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
     var myStyle = {
         "color": randomColor,
-        "weight": 3,
+        "weight": 1,
         "opacity": 0.65
     };
     var geojsonLayer = L.geoJSON(geojson,{
@@ -72,7 +72,7 @@ function addGeojson(geojson){
                          onEachFeature: function (feature, layer) {
                             //地物ごとにプロパティをポップアップに表示(HTML)
                             var properties = feature.properties;
-                            var propHtml = "<table cellpadding='3' width='300px' style='table-layout:auto; font-size:9pt;' >"
+                            var propHtml = "<table cellpadding='3' width='300px' style='table-layout:auto; font-size:9.5pt;' >"
                             for (key in properties) {
                                 propHtml += "<tr><td>" + String(key) + "</td><td>" + String(properties[key]) + "</td></tr>"
                             };

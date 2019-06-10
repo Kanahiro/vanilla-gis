@@ -61,10 +61,16 @@ def save_overlay():
 
 #TODO パスワード設定
 @app.route('/user_map/<map_id>')
-def custom_map(map_id):
+def user_map(map_id):
 	map = session.query(Custom_overlay).get(map_id)
+	return render_template('usermap.html',map_title=map.title, author_name=map.author, id=map_id)
+
+@app.route('/user_map', methods=["POST"])
+def get_user_map():
+	user_map_id = request.form["map_id"]
+	map = session.query(Custom_overlay).get(user_map_id)
 	parsed_json = json.loads(map.layers)
-	return render_template('usermap.html',map_title=map.title, author_name=map.author, layers=parsed_json)
+	return jsonify(parsed_json)
 
 if __name__ == '__main__':
 	app.run()
