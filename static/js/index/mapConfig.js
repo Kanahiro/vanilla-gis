@@ -1,3 +1,5 @@
+//TODO ズームレベルに応じた簡素化
+
 //LEAFLET.JS
 var mapTitle = "TEST Map"
 var authorName = "aaaaaaaaaaaa"
@@ -73,11 +75,3 @@ L.control.custom({
 }).addTo(map);
 
 //some components
-//画面右下のミニウィンドウに載せるデータを設定
-function miniWindowChanger(url=null){
-    if (url) {
-        var loadingAnimationHtml = "<img src='"+ url + "' height='50px' width='50px'>";
-        miniWindow.innerHTML = loadingAnimationHtml;
-    }else{
-        miniWindow.innerHTML = "";};
-}

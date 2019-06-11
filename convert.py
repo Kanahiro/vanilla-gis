@@ -6,10 +6,21 @@ CODECS = ['utf-8','shift_jis','euc_jp','cp932',
 
 import shapefile, io, zipfile
 
+#zipファイルからshpファイルを探してファイル名を取得
+def find_shpfile_inzip(zipped_shp):
+	zip_infolist = zipped_shp.infolist()
+	for info in zip_infolist:
+		if not info.filename.startswith('__MACOSX/'): #Mac-ZIP対応
+			if info.filename.endswith('.shp'):
+				return info.filename
+
 #ZIP保存されたSHP群をGEOJSON形式で返す
 def zipped_shp_to_geojson(zipped_shp):
 	zipped_files = zipfile.ZipFile(zipped_shp)
-	shp_name = zipped_shp.filename[:-4]
+
+	#zipファイルからshpファイルを探してファイル名を取得
+	shp_name = find_shpfile_inzip(zipped_files)[:-4]
+
 	#shapefile読み込みと適合判定
 	try:
 		shp_file_bytes = zipped_files.read(shp_name + '.shp')
@@ -17,7 +28,7 @@ def zipped_shp_to_geojson(zipped_shp):
 		dbf_file_bytes = zipped_files.read(shp_name + '.dbf')
 	except:
 		return "Imported file was not apropriate Shape-Zip-File."
-	geojson = dict(name=shp_name,
+	geojson = dict(name=zipped_shp.filename[:-4],
 					type="FeatureCollection",
 					features=[])
 	#pyshpはライブラリ内部でデコードするので、正しいエンコーディングでデコード出来るまでループ
@@ -40,4 +51,5 @@ def zipped_shp_to_geojson(zipped_shp):
 			print(codec + 'is not suitable for this file.')
 			continue
 	return geojson
+
 #TODO CSV対応
