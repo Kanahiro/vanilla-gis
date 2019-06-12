@@ -11,6 +11,7 @@ function fetchPost(methodUrl, formData) {
         console.log("err=" + err);
     });
 }
+/*
 //store Edit to DB
 function sendLayersToPython(layerGroup){
 	var exportGeojsons = []
@@ -57,6 +58,8 @@ L.control.custom({
     }
 })
 .addTo(map);
+*/
+
 //export GeoJSON file
 function exportGeojson(layerGroup){
 	var exportData = {
@@ -90,6 +93,7 @@ function exportGeojson(layerGroup){
     .catch(function(err) {
         console.log("err=" + err);
     });
+    miniWindowChanger("");
 }
 //GUI
 L.control.custom({
@@ -100,8 +104,6 @@ L.control.custom({
     classes : 'card border-secondary',
     style   :
     {
-        position: 'absolute',
-        right: '65px',
         padding: '5px',
         cursor: 'pointer',
         opacity: '1.0',
@@ -110,7 +112,7 @@ L.control.custom({
     {
         click: function(data)
         {
-            miniWindowChanger("http://kuraline.jp/read/content/images/common/loading.gif");
+            miniWindowChanger("https://www.asus.com/support/images/support-loading.gif");
             exportGeojson(customLayerGroup);
         },
         dblclick: function(data)

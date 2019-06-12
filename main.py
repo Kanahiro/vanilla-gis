@@ -26,10 +26,11 @@ def convert_to_geojson():
 	geojson = None
 	if mimetype.endswith('.geojson'):
 		geojson = decode_to_geojson(file.read())
+		geojson['name'] = file.filename[:-8]
 	elif mimetype.endswith('.zip'):
 		geojson = zipped_shp_to_geojson(file)
 	return jsonify(geojson)
-
+'''
 @app.route('/export', methods=["POST"])
 def export_geojson():
 	#受信
@@ -45,6 +46,8 @@ def export_geojson():
 	response.headers['Content-Disposition'] = 'attachment; filename=' + downloadFileName
 	return response
 
+'''
+
 #DBにレイヤーグループを保存する
 @app.route('/save', methods=["POST"])
 def save_overlay():
@@ -58,6 +61,7 @@ def save_overlay():
 	session.commit()
 	print(session.query(Custom_overlay).all())
 	return "OK"
+
 
 #TODO パスワード設定
 @app.route('/user_map/<map_id>')

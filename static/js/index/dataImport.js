@@ -70,6 +70,7 @@ function addGeojson(geojson){
                          onEachFeature: function (feature, layer) {
                             //地物ごとにプロパティをポップアップに表示(HTML)
                             //Props table
+                            //TODO 関数化
                             var properties = feature.properties;
                             var propHtml = "<table cellpadding='3' width='300px' style='table-layout:auto; font-size:9.5pt;' >"
                             for (key in properties) {
@@ -87,9 +88,12 @@ function addGeojson(geojson){
                             layer.options.smoothFactor = 2;
 
                             //地物ごとのスタイルの設定
-                            var layerStyle = makeGoodStyle(layer);
-                            layerStyle.color = randomColor;
-                            layer.setStyle(layerStyle);
+                            var type = layer.feature.geometry.type;
+                            if (type != "Point") {
+                                var layerStyle = makeGoodStyle(type);
+                                layerStyle.color = randomColor;
+                                layer.setStyle(layerStyle); 
+                            };
                         }
     });
     geojsonLayer.name = geojson.name
@@ -100,13 +104,12 @@ function addGeojson(geojson){
 }
 
 //地物ごとに最適なスタイルを返す
-function makeGoodStyle(layer){
+function makeGoodStyle(type){
     //default
     var style = {
         "weight": 1,
-        "opacity": 0.65
+        "opacity": 0.8
     };
-    var type = layer.feature.geometry.type; //Point Polyline Polygon
     switch(type){
         case "Point":
             break;
@@ -116,9 +119,13 @@ function makeGoodStyle(layer){
         case "MultiLineString":
             style.weight = 3;
             break;
+        case "Polygon":
+            break;
+        case "MultiPolygon":
+            break;
     }
     return style
-}
+};
 
 //読み込み中のくるくるGUI
 L.control.custom({
