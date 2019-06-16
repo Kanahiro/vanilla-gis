@@ -26,9 +26,6 @@ var overlayLayer = {
 	"手書きレイヤー":drawLayer,
 }
 
-//ユーザーが追加したレイヤー
-var customLayerGroup = [drawLayer]
-
 //地図を表示するdiv要素のidを設定
 var map = L.map('map_container',{
 	//デフォルトのタイルマップを定義
@@ -38,10 +35,13 @@ var map = L.map('map_container',{
 map.setView([44.2,142.4], 5);
 //スケールを表示
 L.control.scale({"imperial":false}).addTo(map);
-//レイヤーコントロールを追加：引数1ベースレイヤー、引数2オーバーレイレイヤー
-var layerControl = L.control.layers(baseLayer,overlayLayer,
-									{"collapsed":false,});
-layerControl.addTo(map);
+
+
+//自作コントロール
+var appearanceControl = L.control.appearance(baseLayer, overlayLayer, [], {opacity:true,
+                                                                    remove:true});
+appearanceControl.addTo(map);
+
 
 //map title window
 var titleAuthorUI = L.control.custom({

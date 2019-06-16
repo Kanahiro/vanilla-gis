@@ -97,10 +97,11 @@ function addGeojson(geojson){
                         }
     });
     geojsonLayer.name = geojson.name
-    //GEOJSONレイヤーをオーバーレイレイヤーに追加（layer_controlはmain.jsで定義）
-    layerControl.addOverlay(geojsonLayer,geojsonLayer.name);
+
     map.addLayer(geojsonLayer);
-    customLayerGroup.push(geojsonLayer);
+    //GEOJSONレイヤーをオーバーレイレイヤーに追加
+    appearanceControl.addOverlay(geojsonLayer,geojsonLayer.name);
+    
 }
 
 //地物ごとに最適なスタイルを返す
