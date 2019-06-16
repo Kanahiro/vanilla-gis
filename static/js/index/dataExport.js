@@ -61,18 +61,20 @@ L.control.custom({
 */
 
 //export GeoJSON file
-function exportGeojson(layerGroup){
+function exportGeojson(layers){
 	var exportData = {
 						"type":"FeatureCollection",
 						"features":[]
 					}
 	//Copy layerGroup(geojsons) to export_geojsons from layerGroup defiend in main.js
-    for (layerNum in layerGroup) {
+    for (i = 0; i < layers.length; i++) {
     	//only ACTIVE overlays will be send to Python
-    	if(!map.hasLayer(layerGroup[layerNum])){continue}
-        var addFeatures = layerGroup[layerNum].toGeoJSON().features
-        for (featureNum in addFeatures) {
-			exportData.features.push(addFeatures[featureNum]);
+        if(!map.hasLayer(layers[i].layer)){continue};
+        var layerGroup = new L.featureGroup();
+        layerGroup.addLayer(layers[i].layer);
+        var addFeatures = layerGroup.toGeoJSON().features
+        for (j = 0; j < addFeatures.length; j++) {
+			exportData.features.push(addFeatures[j]);
         }
     }
     console.log(exportData);
@@ -113,7 +115,15 @@ L.control.custom({
         click: function(data)
         {
             miniWindowChanger("https://www.asus.com/support/images/support-loading.gif");
-            exportGeojson(customLayerGroup);
+            console.log(appearanceControl._layers);
+            var outputLayers = []
+            var layers = appearanceControl._layers;
+            for (i = 0; i < layers.length; i++) {
+                if (layers[i].overlay && layers[i].name != "傾斜量図") {
+                    outputLayers.push(layers[i]);
+                }
+            }
+            exportGeojson(outputLayers);
         },
         dblclick: function(data)
         {

@@ -30,7 +30,7 @@ def convert_to_geojson():
 	elif mimetype.endswith('.zip'):
 		geojson = zipped_shp_to_geojson(file)
 	return jsonify(geojson)
-'''
+
 @app.route('/export', methods=["POST"])
 def export_geojson():
 	#受信
@@ -75,6 +75,8 @@ def get_user_map():
 	map = session.query(Custom_overlay).get(user_map_id)
 	parsed_json = json.loads(map.layers)
 	return jsonify(parsed_json)
+
+'''
 
 if __name__ == '__main__':
 	app.run()
