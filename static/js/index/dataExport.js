@@ -77,7 +77,6 @@ function exportGeojson(layers){
 			exportData.features.push(addFeatures[j]);
         }
     }
-    console.log(exportData);
     var formdata = new FormData();
     formdata.append('geojsons', JSON.stringify(exportData));
     formdata.append('mapTitle', mapTitle);
@@ -115,7 +114,6 @@ L.control.custom({
         click: function(data)
         {
             miniWindowChanger("https://www.asus.com/support/images/support-loading.gif");
-            console.log(appearanceControl._layers);
             var outputLayers = []
             var layers = appearanceControl._layers;
             for (i = 0; i < layers.length; i++) {

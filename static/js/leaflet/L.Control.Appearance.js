@@ -6,9 +6,10 @@ L.Control.Appearance = L.Control.extend({
 		radioCheckbox: true,
 		layerName: true,
 		opacity: false,
+		color: false,
 		remove: false
 	},
-	initialize: function (baseLayers, unremovableOverlays, overlays, options) {
+	initialize: function (baseLayers, uneditableOverlays, overlays, options) {
 		L.Util.setOptions(this, options);
 		this._layerControlInputs = [];
 		this._layers = [];
@@ -18,8 +19,8 @@ L.Control.Appearance = L.Control.extend({
 		for (var i in baseLayers) {
 			this._addLayer(baseLayers[i], i);
 		}
-		for (var i in unremovableOverlays) {
-			this._addLayer(unremovableOverlays[i], i, true, true);
+		for (var i in uneditableOverlays) {
+			this._addLayer(uneditableOverlays[i], i, true, true);
 		}
 		for (var i in overlays) {
 			this._addLayer(overlays[i], i, true);
@@ -28,13 +29,12 @@ L.Control.Appearance = L.Control.extend({
 	onAdd: function (map) {
 		this._initLayout();
 		this._update();
-
 		return this._container;
 	},
 	// @method addOverlay(layer: Layer, name: String): this
 	// Adds an overlay (checkbox entry) with the given name to the control.
-	addOverlay: function (layer, name) {
-		this._addLayer(layer, name, true);
+	addOverlay: function (layer, name, unremovable) {
+		this._addLayer(layer, name, true, unremovable);
 		return (this._map) ? this._update() : this;
 	},
 	_onLayerChange: function (e) {
@@ -91,22 +91,12 @@ L.Control.Appearance = L.Control.extend({
 		}
 		var form = this._form = L.DomUtil.create('form', className + '-list');
 		if (collapsed) {
-			this._map.on('click', this.collapse, this);
 			if (!L.Browser.android) {
 				L.DomEvent.on(container, {
 					mouseenter: this.expand,
 					mouseleave: this.collapse
 				}, this);
 			}
-		}
-		var link = this._layersLink = L.DomUtil.create('a', className + '-toggle', container);
-		link.href = '#';
-		link.title = 'Layers';
-		if (L.Browser.touch) {
-			L.DomEvent.on(link, 'click', L.DomEvent.stop);
-			L.DomEvent.on(link, 'click', this.expand, this);
-		} else {
-			L.DomEvent.on(link, 'focus', this.expand, this);
 		}
 		if (!collapsed) {
 			this.expand();
@@ -115,29 +105,6 @@ L.Control.Appearance = L.Control.extend({
 		this._separator = L.DomUtil.create('div', className + '-separator', form);
 		this._overlaysList = L.DomUtil.create('div', className + '-overlays', form);
 		container.appendChild(form);
-	},
-	_getLayer: function (id) {
-		for (var i = 0; i < this._layers.length; i++) {
-			if (this._layers[i] && L.Util.stamp(this._layers[i].layer) === id) {
-				return this._layers[i];
-			}
-		}
-	},
-	_removeLayer: function (id) {
-		for (var i = 0; i < this._layers.length; i++) {
-			if (this._layers[i] && L.Util.stamp(this._layers[i].layer) === id) {
-				this._layers.splice(i,1);
-				break;
-			}
-		}
-	},
-	_addLayer: function (layer, name, overlay, unremovable) {
-		this._layers.push({
-			layer: layer,
-			name: name,
-			overlay: overlay,
-			unremovable: unremovable
-		});
 	},
 	_update: function () {
 		if (!this._container) { return this; }
@@ -155,62 +122,48 @@ L.Control.Appearance = L.Control.extend({
 		this._separator.style.display = overlaysPresent && baseLayersPresent ? '' : 'none';
 		return this;
 	},
-	_createRadioElement: function (name, checked) {
-
-		var radioHtml = '<input type="radio" class="leaflet-control-layers-selector" name="' +
-				name + '"' + (checked ? ' checked="checked"' : '') + '/>';
-
-		var radioFragment = document.createElement('div');
-		radioFragment.innerHTML = radioHtml;
-
-		return radioFragment.firstChild;
+	_getLayer: function (id) {
+		for (var i = 0; i < this._layers.length; i++) {
+			if (this._layers[i] && L.Util.stamp(this._layers[i].layer) === id) {
+				return this._layers[i];
+			}
+		}
 	},
-	_createRangeElement: function (name, opacity) {
-		input = document.createElement('input');
-		input.type = 'range';
-		input.style.width = "70px";
-		input.className = name;
-		input.min = 0;
-		input.max = 100;
-		input.value = opacity * 100;
-		return input;
+	_addLayer: function (layer, name, overlay, uneditable) {
+		this._layers.push({
+			layer: layer,
+			name: name,
+			overlay: overlay,
+			uneditable: uneditable
+		});
 	},
-	_createCheckboxElement: function (name, checked) {
-		input = document.createElement('input');
-		input.type = 'checkbox';
-		input.className = name;
-		input.defaultChecked = checked;
-		return input;
-	},
-	_createRemoveElement: function (name) {
-		input = document.createElement('input');
-		input.type = 'checkbox';
-		input.value = '削除';
-		input.className = name;
-		input.defaultChecked = true;
-		return input;
-	},
-	_testfunc: function(){
-		console.log('clicked');
+	_removeLayer: function (id) {
+		for (var i = 0; i < this._layers.length; i++) {
+			if (this._layers[i] && L.Util.stamp(this._layers[i].layer) === id) {
+				this._layers.splice(i,1);
+				break;
+			}
+		}
 	},
 	_addItem: function (obj) {
 		var label = document.createElement('label'),
 			checked = this._map.hasLayer(obj.layer),
+			layerName = obj.name
 			opacity = obj.layer.options.opacity,
+			color = obj.layer.options.color,
 			elements = [];
-		var name = document.createElement('span');
-		name.innerHTML = ' ' + obj.name;
+
 		//HTML Elements for OVERLAY
 		if (obj.overlay) {
 			if (this.options.radioCheckbox){elements.push(this._createCheckboxElement('leaflet-control-layers-selector', checked))};
-			if (this.options.layerName){elements.push(name)};
+			if (this.options.layerName){elements.push(this._createNameElement('leaflet-control-layers-name', layerName))};
 			if (this.options.opacity){elements.push(this._createRangeElement('leaflet-control-layers-range', opacity))};
-			if (this.options.remove && !obj.unremovable){elements.push(this._createRemoveElement('leaflet-control-layers-remove'))};
-		} else {
-		//HTML Elements for BASELAYER
+			if (this.options.color && !obj.uneditable){elements.push(this._createColorElement('leaflet-control-layers-color', color))};
+			if (this.options.remove && !obj.uneditable){elements.push(this._createRemoveElement('leaflet-control-layers-remove'))};
+		}else{
 			if (this.options.radioCheckbox){elements.push(this._createRadioElement('leaflet-control-layers-selector', checked))};
-			if (this.options.layerName){elements.push(name)};
-		};
+			if (this.options.layerName){elements.push(this._createNameElement('leaflet-control-layers-name', layerName))};
+		}
 		var holder = document.createElement('div');
 		label.appendChild(holder);
 		for (var i = 0; i < elements.length; i++) {
@@ -225,6 +178,9 @@ L.Control.Appearance = L.Control.extend({
 				case "leaflet-control-layers-selector":
 					L.DomEvent.on(elements[i], 'change', this._onRadioCheckboxClick, this);
 					break;
+				case "leaflet-control-layers-color":
+					L.DomEvent.on(elements[i], 'change', this._onColorClick, this);
+					break;
 				case "leaflet-control-layers-remove":
 					L.DomEvent.on(elements[i], 'change', this._onRemoveClick, this);
 					break;
@@ -234,6 +190,56 @@ L.Control.Appearance = L.Control.extend({
 		container.appendChild(label);
 		return label;
 	},
+	_createRadioElement: function (name, checked) {
+		var radioHtml = '<input type="radio" class="leaflet-control-layers-selector" name="' +
+				name + '"' + (checked ? ' checked="checked"' : '') + '/>';
+		var radioFragment = document.createElement('div');
+		radioFragment.innerHTML = radioHtml;
+		return radioFragment.firstChild;
+	},
+	_createCheckboxElement: function (name, checked) {
+		input = document.createElement('input');
+		input.type = 'checkbox';
+		input.className = name;
+		input.defaultChecked = checked;
+		return input;
+	},
+	_createNameElement: function (name, layerName) {
+		var nameLabel = document.createElement('span');
+		nameLabel.style.display = "inline-block";
+		nameLabel.style.width = "100px";
+		nameLabel.style.margin = "0 5 0 5";
+		nameLabel.style.overflow = "hidden";
+		nameLabel.style.verticalAlign = "middle";
+		nameLabel.innerHTML = ' ' + layerName;
+		return nameLabel;
+	},
+	_createRangeElement: function (name, opacity) {
+		input = document.createElement('input');
+		input.type = 'range';
+		input.style.width = "50px";
+		input.className = name;
+		input.min = 0;
+		input.max = 100;
+		input.value = opacity * 100;
+		return input;
+	},
+	_createColorElement: function (name, color) {
+		var colorHtml = '<input type="color" class="leaflet-control-layers-color" value="' +
+						color + '"' +
+						'list="data1"/ style="width:50px; margin:0 5 0 5;">';
+		var colorFragment = document.createElement('div');
+		colorFragment.innerHTML = colorHtml;
+		return colorFragment.firstChild;
+	},
+	_createRemoveElement: function (name) {
+		input = document.createElement('input');
+		input.type = 'checkbox';
+		input.value = '削除';
+		input.className = name;
+		input.defaultChecked = true;
+		return input;
+	},
 	_onRadioCheckboxClick: function () {
 		var inputs = this._layerControlInputs,
 		    input, layer;
@@ -242,9 +248,8 @@ L.Control.Appearance = L.Control.extend({
 
 		this._handlingClick = true;
 
-		for (var i = inputs.length - 1; i >= 0; i--) {
+		for (var i = 0; i < inputs.length; i++) {
 			input = inputs[i];
-			if (input.className != "leaflet-control-layers-selector"){continue};
 			layer = this._getLayer(input.layerId).layer;
 
 			if (input.checked) {
@@ -293,8 +298,30 @@ L.Control.Appearance = L.Control.extend({
 				layer.setOpacity(input.value / 100);
 			}
 		}
-
 		this._handlingClick = false;
+		this._refocusOnMap();
+	},
+	_onColorClick: function () {
+		var inputs = this._layerControlInputs,
+			input, layer;
+			
+		this._handlingClick = true;
+		for (var i = 0; i < inputs.length; i++) {
+			input = inputs[i];
+			if (input.className != "leaflet-control-layers-color"){continue};
+			layer = this._getLayer(input.layerId).layer;
+			//not tilemap
+			if( typeof layer._url === 'undefined'){
+				var style = {"color":"#000000",
+							"opacity":0.6,
+							"fillOpacity":0.3};
+				style.color = input.value;
+				layer.setStyle(style);
+				layer.options.color = input.value;
+			};
+		}
+		this._handlingClick = false;
+		this._update();
 		this._refocusOnMap();
 	},
 	_onRemoveClick: function () {
@@ -317,7 +344,6 @@ L.Control.Appearance = L.Control.extend({
 		this._refocusOnMap();
 	},
 });
-
 L.control.appearance = function (baseLayers, unremovableOverlays, overlays, options) {
         return new L.Control.Appearance(baseLayers, unremovableOverlays, overlays, options);
 };

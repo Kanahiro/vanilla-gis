@@ -96,12 +96,12 @@ function addGeojson(geojson){
                             };
                         }
     });
-    geojsonLayer.name = geojson.name
+    geojsonLayer.options.color = randomColor
+    geojsonLayer.options.name = geojson.name
 
     map.addLayer(geojsonLayer);
     //GEOJSONレイヤーをオーバーレイレイヤーに追加
-    appearanceControl.addOverlay(geojsonLayer,geojsonLayer.name);
-    
+    appearanceControl.addOverlay(geojsonLayer,geojsonLayer.options.name);
 }
 
 //地物ごとに最適なスタイルを返す
