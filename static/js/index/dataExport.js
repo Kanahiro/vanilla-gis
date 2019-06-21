@@ -117,7 +117,9 @@ L.control.custom({
             var outputLayers = []
             var layers = appearanceControl._layers;
             for (i = 0; i < layers.length; i++) {
-                if (layers[i].overlay && layers[i].name != "傾斜量図") {
+                if (layers[i].overlay && layers[i].name != "色別標高図"
+                                    && layers[i].name != "傾斜量図"
+                                    && layers[i].name != "活断層図") {
                     outputLayers.push(layers[i]);
                 }
             }

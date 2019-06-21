@@ -250,6 +250,7 @@ L.Control.Appearance = L.Control.extend({
 
 		for (var i = 0; i < inputs.length; i++) {
 			input = inputs[i];
+			if (input.className != "leaflet-control-layers-selector"){continue};
 			layer = this._getLayer(input.layerId).layer;
 
 			if (input.checked) {
@@ -344,6 +345,6 @@ L.Control.Appearance = L.Control.extend({
 		this._refocusOnMap();
 	},
 });
-L.control.appearance = function (baseLayers, unremovableOverlays, overlays, options) {
-        return new L.Control.Appearance(baseLayers, unremovableOverlays, overlays, options);
+L.control.appearance = function (baseLayers, uneditableOverlays, overlays, options) {
+        return new L.Control.Appearance(baseLayers, uneditableOverlays, overlays, options);
 };
