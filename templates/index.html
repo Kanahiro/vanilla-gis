@@ -2,10 +2,10 @@
 {% block content %}
 <div id='import_section' ondragover="onDragOver(event)" ondrop="onDrop(event)">
 	<div id='map_container' style='width:100%;height:100%'></div>
+
 </div>
 <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/leaflet.css')}}">
 <script type='text/javascript' src='{{url_for("static", filename="js/leaflet/leaflet.js")}}'></script>
-<script type='text/javascript' src='{{url_for("static", filename="js/leaflet/L.VectorGrid.js")}}'></script>
 <script type='text/javascript' src='{{url_for("static", filename="js/leaflet/Leaflet.Control.Custom.js")}}'></script>
 <script type='text/javascript' src='{{url_for("static", filename="js/leaflet/L.Control.Appearance.js")}}'></script>
 <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/leaflet.draw-src.css')}}">
@@ -14,4 +14,46 @@
 <script type='text/javascript' src='{{url_for("static", filename="js/index/drawing.js")}}'></script>
 <script type='text/javascript' src='{{url_for("static", filename="js/index/dataImport.js")}}'></script>
 <script type='text/javascript' src='{{url_for("static", filename="js/index/dataExport.js")}}'></script>
+<script type='text/javascript'>
+	//URLパラメータで取得した値でDBからマップタイトル、作者名、マップIDを取得した後の処理
+	var title_load = "{{map_title}}",
+		name_load = "{{author_name}}",
+		id_load = "{{id}}"
+	if (id_load){
+		mapTitle = title_load;
+		authorName = name_load;
+		//タイトルと作者を更新
+		map.removeControl(titleAuthorUI);
+		titleAuthorUI.options.content = '<div>'+
+											mapTitle + '\n\n' + '<a href="https://twitter.com/'+ authorName + '">@' + authorName + '</a>' +
+									'</div>'
+		titleAuthorUI.addTo(map);
+		//他のコンテンツの読み込み完了時に発火
+		window.onload = function(){
+			miniWindowChanger("https://www.asus.com/support/images/support-loading.gif");
+			//APIからGEOJSON取得処理
+			var formdata = new FormData();
+			formdata.append('map_id', id_load);
+			fetch("/user_map",{
+				method:"PUT",
+				body:formdata
+			})
+			.then(function(response1) {
+				console.log("status=" + response1.status); //例 200
+				return response1.json();
+			})
+			.then(function(jsons) {
+				for (num in jsons) {
+					addGeojson(jsons[num]);
+				}
+			})
+			.catch(function(err1) {
+				console.log("err=" + err1);
+				alert('Import Error');
+				miniWindowChanger("");
+			});
+		};
+	}else{
+	}
+</script>
 {% endblock %}

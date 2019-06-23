@@ -46,37 +46,33 @@ def export_geojson():
 	response.headers['Content-Disposition'] = 'attachment;'
 	return response
 
-'''
-
 #DBにレイヤーグループを保存する
-@app.route('/save', methods=["POST"])
-def save_overlay():
+@app.route('/user_map', methods=["POST"])
+def post_user_map():
+	print(request)
 	#DBにレイヤーグループを追加する処理
 	#geojsonsはGeoJSONデータがStringに変換されたもの
 	map_title = request.form['mapTitle']
 	author_name = request.form['authorName']
-	geojsons = request.form['geojsons']
+	geojsons = request.form['layers']
 	new_custom_map = Custom_overlay(title=map_title, author=author_name, layers=geojsons)
 	session.add(new_custom_map)
 	session.commit()
 	print(session.query(Custom_overlay).all())
 	return "OK"
 
-
 #TODO パスワード設定
 @app.route('/user_map/<map_id>')
 def user_map(map_id):
 	map = session.query(Custom_overlay).get(map_id)
-	return render_template('usermap.html',map_title=map.title, author_name=map.author, id=map_id)
+	return render_template('index.html',map_title=map.title, author_name=map.author, id=map_id)
 
-@app.route('/user_map', methods=["POST"])
+@app.route('/user_map', methods=["PUT"])
 def get_user_map():
 	user_map_id = request.form["map_id"]
 	map = session.query(Custom_overlay).get(user_map_id)
 	parsed_json = json.loads(map.layers)
 	return jsonify(parsed_json)
-
-'''
 
 if __name__ == '__main__':
 	app.run()

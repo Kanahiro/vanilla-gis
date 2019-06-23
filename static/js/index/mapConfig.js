@@ -32,6 +32,7 @@ kokudoCrackLayer.setOpacity(0.5);
 
 //手書き図形のためのオーバーレイ
 var drawLayer = new L.FeatureGroup();
+drawLayer.options.name = "手書きレイヤー"
 
 var overlayLayer = {
     "色別標高図":kokudoHeightLayer,
@@ -49,7 +50,8 @@ var map = L.map('map_container',{
 //地図の中心とズームレベルを指定
 map.setView([44.2,142.4], 5);
 //スケールを表示
-L.control.scale({"imperial":false}).addTo(map);
+L.control.scale({"imperial":false,
+                "position":"bottomright"}).addTo(map);
 
 //自作コントロール
 var appearanceControl = L.control.appearance(baseLayer, overlayLayer, [], {opacity:true,

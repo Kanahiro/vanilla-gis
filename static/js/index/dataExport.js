@@ -11,33 +11,32 @@ function fetchPost(methodUrl, formData) {
         console.log("err=" + err);
     });
 }
-
+/*
 //store Edit to DB
+//DBにはタイトル、作者、GeoJSONを格納する
+//GeoJSONはtype,featuresにくわえ、name,color,opacityが追加されている
 function sendLayersToPython(layers){
-    //Copy layerGroup(geojsons) to export_geojsons from layerGroup defiend in main.js
+    var exportGeojsons = []
     for (i = 0; i < layers.length; i++) {
         //only ACTIVE overlays will be send to Python
         if(!map.hasLayer(layers[i].layer)){continue};
-        var layerGroup = new L.featureGroup();
-        layerGroup.addLayer(layers[i].layer);
-        var addFeatures = layerGroup.toGeoJSON().features
-        for (j = 0; j < addFeatures.length; j++) {
-            exportData.features.push(addFeatures[j]);
-        }
-    }
-    console.log(exportGeojsons)
-    var strLayerGeojsons = JSON.stringify(exportGeojsons);
+        //レイヤーデータからGeoJSON形式に
+        var geojson = layers[i].layer.toGeoJSON();
+        //toGeoJSON()で捨象されたcolorとname属性を追記
+        geojson.color = layers[i].layer.options.color
+        geojson.name = layers[i].layer.options.name
+        exportGeojsons.push(geojson);
+    };
+    var strGeojsons = JSON.stringify(exportGeojsons);
     var formdata = new FormData();
-    formdata.append('layers', strLayerGeojsons);
+    formdata.append('layers', strGeojsons);
     formdata.append('mapTitle', mapTitle);
     formdata.append('authorName', authorName);
-    console.log(strLayersGeojsons, formdata);
-    //fetchPost("/save", formdata)
+    fetchPost("/user_map", formdata)
 }
-/*
 //GUI
 L.control.custom({
-    position: 'topleft',
+    position: 'bottomleft',
     content : '<div>'+
                 'URL生成'+
               '</div>',
@@ -57,7 +56,8 @@ L.control.custom({
             for (i = 0; i < layers.length; i++) {
                 if (layers[i].overlay && layers[i].name != "色別標高図"
                                     && layers[i].name != "傾斜量図"
-                                    && layers[i].name != "活断層図") {
+                                    && layers[i].name != "活断層図"
+                                    && layers[i].name != "手書きレイヤー") {
                     outputLayers.push(layers[i]);
                 }
             }
@@ -73,6 +73,7 @@ L.control.custom({
 })
 .addTo(map);
 */
+
 //export GeoJSON file
 function exportGeojson(layers){
 	var exportData = {
@@ -111,9 +112,9 @@ function exportGeojson(layers){
 }
 //GUI
 L.control.custom({
-    position: 'topleft',
+    position: 'bottomleft',
     content : '<div>'+
-                '<span>GeoJSONエクスポート</span>'+
+                '<span>GeoJSON出力</span>'+
               '</div>',
     classes : 'card border-secondary',
     style   :

@@ -65,6 +65,7 @@ function getGeojson(f) {
 }
 //geojsonを入力するとmapに追加する
 function addGeojson(geojson){
+    miniWindowChanger("https://www.asus.com/support/images/support-loading.gif");
     var randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
     var geojsonLayer = L.geoJSON(geojson,{
                          onEachFeature: function (feature, layer) {
@@ -92,17 +93,24 @@ function addGeojson(geojson){
                             if (type != "Point") {
                                 var layerStyle = makeGoodStyle(type);
                                 layerStyle.color = randomColor;
+                                if (geojson.color){
+                                    layerStyle.color = geojson.color    
+                                }
                                 layer.setStyle(layerStyle); 
                             };
                         }
     });
     geojsonLayer.options.color = randomColor
-
+    if (geojson.color){
+        geojsonLayer.options.color = geojson.color    
+    }
     geojsonLayer.options.name = geojson.name
 
     map.addLayer(geojsonLayer);
     //GEOJSONレイヤーをオーバーレイレイヤーに追加
     appearanceControl.addOverlay(geojsonLayer,geojsonLayer.options.name);
+
+    miniWindowChanger("");
 }
 
 //地物ごとに最適なスタイルを返す

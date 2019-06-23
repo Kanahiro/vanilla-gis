@@ -1,9 +1,6 @@
 //leaflet.draw
 var drawControl = new L.Control.Draw({
   draw: {
-    circle: {
-      feet: false
-    },
   },
   edit: {
     featureGroup: drawLayer,
