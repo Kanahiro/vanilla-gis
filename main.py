@@ -1,4 +1,4 @@
-import json, io, datetime, codecs
+import json, io, datetime, codecs, os
 
 from flask import Flask, render_template, request, jsonify, make_response, send_file
 from sqlalchemy import create_engine
@@ -22,13 +22,14 @@ def index():
 #TODO SHP,GEOJSON以外にも対応（CSV）、ラスター対応
 def convert_to_geojson():
 	file = request.files['datafile']
-	mimetype = file.filename.lower()
+	f_name, f_type = os.path.splitext(file.filename)
+	lower_f_type = f_type.lower()
 	geojson = None
-	if mimetype.endswith('.geojson'):
+	if lower_f_type == ".geojson":
 		geojson = decode_to_geojson(file.read())
-		geojson['name'] = file.filename[:-8]
-	elif mimetype.endswith('.zip'):
+	elif lower_f_type == ".zip":
 		geojson = zipped_shp_to_geojson(file)
+	geojson['name'] = f_name
 	return jsonify(geojson)
 
 @app.route('/export', methods=["POST"])
@@ -40,10 +41,9 @@ def export_geojson():
 	geojson = json.loads(geojsons)
 	geojson_file = io.StringIO()
 	json.dump(geojson, geojson_file, indent=4)
-	downloadFileName = "test.geojson"
 	response = make_response()
 	response.data = geojson_file.getvalue()
-	response.headers['Content-Disposition'] = 'attachment; filename=' + downloadFileName
+	response.headers['Content-Disposition'] = 'attachment;'
 	return response
 
 '''

@@ -76,16 +76,16 @@ function addGeojson(geojson){
                             for (key in properties) {
                                 propHtml += "<tr><td>" + String(key) + "</td><td>" + String(properties[key]) + "</td></tr>"
                             };
-                            propHtml+= "</table>"
+                            propHtml += "</table>"
                             //TODO 地物削除ボタン
-                            var popupHtml = "<div>"
-                                                + propHtml
-                                                + "<input type='button' value='削除' onclick='removetest()'>"
-                                            +"</div>";
+                            var layerId = L.Util.stamp(layer);
+                            var popupHtml = "<div>" +
+                                                propHtml +
+                                            "</div>";
                             layer.bindPopup(popupHtml);
 
                             //簡素化
-                            layer.options.smoothFactor = 2;
+                            layer.options.smoothFactor = 1.5;
 
                             //地物ごとのスタイルの設定
                             var type = layer.feature.geometry.type;
@@ -97,6 +97,7 @@ function addGeojson(geojson){
                         }
     });
     geojsonLayer.options.color = randomColor
+
     geojsonLayer.options.name = geojson.name
 
     map.addLayer(geojsonLayer);

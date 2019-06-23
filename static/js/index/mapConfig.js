@@ -8,9 +8,13 @@ var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 var kokudoLayer = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg',{
     attribution: '© <a href="https://maps.gsi.go.jp/development/ichiran.html">国土地理院</a>',
 });
+var mieruneLayer = L.tileLayer('https://tile.mierune.co.jp/mierune_mono/{z}/{x}/{y}.png',{
+    attribution: "Maptiles by <a href='http://mierune.co.jp/' target='_blank'>MIERUNE</a>, under CC BY. Data by <a href='http://osm.org/copyright' target='_blank'>OpenStreetMap</a> contributors, under ODbL."
+});
 var baseLayer = {
 	"OpenStreetMap":osmLayer,
-	"国土地理院オルソ":kokudoLayer,
+    "国土地理院オルソ":kokudoLayer,
+    "MIERUNE MONO":mieruneLayer
 };
 //オーバーレイレイヤーを定義
 var kokudoHeightLayer = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/relief/{z}/{x}/{y}.png',{
@@ -22,7 +26,9 @@ var kokudoContourLayer = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/slope
 var kokudoCrackLayer = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/afm/{z}/{x}/{y}.png',{
 	attribution: '© <a href="https://maps.gsi.go.jp/development/ichiran.html">国土地理院</a>',
 });
-kokudoContourLayer.setOpacity(0.65);
+kokudoHeightLayer.setOpacity(0.5);
+kokudoContourLayer.setOpacity(0.5);
+kokudoCrackLayer.setOpacity(0.5);
 
 //手書き図形のためのオーバーレイ
 var drawLayer = new L.FeatureGroup();
@@ -36,6 +42,7 @@ var overlayLayer = {
 
 //地図を表示するdiv要素のidを設定
 var map = L.map('map_container',{
+    preferCanvas:true,
 	//デフォルトのタイルマップを定義
 	layers:[osmLayer, drawLayer],
 });

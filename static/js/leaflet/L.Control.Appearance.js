@@ -247,16 +247,15 @@ L.Control.Appearance = L.Control.extend({
 		    removedLayers = [];
 
 		this._handlingClick = true;
-
 		for (var i = 0; i < inputs.length; i++) {
 			input = inputs[i];
 			if (input.className != "leaflet-control-layers-selector"){continue};
 			layer = this._getLayer(input.layerId).layer;
 
 			if (input.checked) {
-				addedLayers.push(layer);
+				this._map.addLayer(layer);
 			} else if (!input.checked) {
-				removedLayers.push(layer);
+				this._map.removeLayer(layer);
 			}
 		}
 

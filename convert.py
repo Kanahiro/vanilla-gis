@@ -28,8 +28,7 @@ def zipped_shp_to_geojson(zipped_shp):
 		dbf_file_bytes = zipped_files.read(shp_name + '.dbf')
 	except:
 		return "Imported file was not apropriate Shape-Zip-File."
-	geojson = dict(name=zipped_shp.filename[:-4],
-					type="FeatureCollection",
+	geojson = dict(type="FeatureCollection",
 					features=[])
 	#pyshpはライブラリ内部でデコードするので、正しいエンコーディングでデコード出来るまでループ
 	for codec in CODECS:
