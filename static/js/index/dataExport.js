@@ -11,10 +11,9 @@ function fetchPost(methodUrl, formData) {
         console.log("err=" + err);
     });
 }
-/*
+
 //store Edit to DB
 function sendLayersToPython(layers){
-    var exportGeojsons = layers
     //Copy layerGroup(geojsons) to export_geojsons from layerGroup defiend in main.js
     for (i = 0; i < layers.length; i++) {
         //only ACTIVE overlays will be send to Python
@@ -35,9 +34,10 @@ function sendLayersToPython(layers){
     console.log(strLayersGeojsons, formdata);
     //fetchPost("/save", formdata)
 }
+/*
 //GUI
 L.control.custom({
-    position: 'bottomright',
+    position: 'topleft',
     content : '<div>'+
                 'URL生成'+
               '</div>',
@@ -111,7 +111,7 @@ function exportGeojson(layers){
 }
 //GUI
 L.control.custom({
-    position: 'bottomright',
+    position: 'topleft',
     content : '<div>'+
                 '<span>GeoJSONエクスポート</span>'+
               '</div>',
