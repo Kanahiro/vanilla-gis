@@ -101,7 +101,7 @@ var titleEdit = L.control.custom({
                                     content : '<form name="titleForm">'+
                                                 'タイトル:<input type="text" name="titleInput" value="" placeholder="Map Title">' +
                                                 '作者:<input type="text" name="authorInput" value="" placeholder="Twitter ID">' +
-                                                '<input type="button" id="editOk" value="OK" onclick="applyEdit()">' +
+                                                '<input type="button" id="editOk" value="OK" onclick="applyTitleEdit()">' +
                                                 '<input type="button" id="editCancel" value="キャンセル" onclick="map.removeControl(titleEdit)">' +
                                               '</form>',
                                     classes : 'card border-secondary',
@@ -128,7 +128,7 @@ var titleEdit = L.control.custom({
                                 });
 
 //タイトルと作者の編集を反映
-function applyEdit(){
+function applyTitleEdit(){
     var form = document.forms.titleForm; 
     mapTitle = form.titleInput.value;
     authorName = form.authorInput.value;

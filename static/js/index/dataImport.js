@@ -1,10 +1,10 @@
 //対応データ形式
-FILE_TYPES = ['.geojson', '.zip']
+IMPORT_FILE_TYPES = ['.geojson', '.zip']
 //データ対応判定
 function checkFileType(fileName){
     var filename = fileName.toLowerCase();
-    for (type in FILE_TYPES) {
-        if (filename.endsWith(FILE_TYPES[type])){return true}
+    for (i in IMPORT_FILE_TYPES) {
+        if (filename.endsWith(IMPORT_FILE_TYPES[i])){return true}
     }
     return false
 }
