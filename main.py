@@ -1,4 +1,4 @@
-import json, io, datetime, codecs, os
+import json, io, datetime, codecs, os, random
 
 from flask import Flask, render_template, request, jsonify, make_response, send_file
 from sqlalchemy import create_engine
@@ -46,10 +46,21 @@ def export_geojson():
 	response.headers['Content-Disposition'] = 'attachment;'
 	return response
 
+#TODO パスワード設定
+@app.route('/user_map/')
+@app.route('/user_map/<map_id>')
+def user_map(map_id = 0):
+	#map_idの指定がない場合、ランダムにmap_idを指定
+	if map_id == 0:
+		map_count = session.query(Custom_overlay).count()
+		random_id = int(random.uniform(1.0, map_count))
+		map_id = random_id
+	map = session.query(Custom_overlay).get(map_id)
+	return render_template('index.html',map_title=map.title, author_name=map.author, id=map_id)
+
 #DBにレイヤーグループを保存する
 @app.route('/user_map', methods=["POST"])
 def post_user_map():
-	print(request)
 	#DBにレイヤーグループを追加する処理
 	#geojsonsはGeoJSONデータがStringに変換されたもの
 	map_title = request.form['mapTitle']
@@ -58,14 +69,7 @@ def post_user_map():
 	new_custom_map = Custom_overlay(title=map_title, author=author_name, layers=geojsons)
 	session.add(new_custom_map)
 	session.commit()
-	print(session.query(Custom_overlay).all())
 	return "OK"
-
-#TODO パスワード設定
-@app.route('/user_map/<map_id>')
-def user_map(map_id):
-	map = session.query(Custom_overlay).get(map_id)
-	return render_template('index.html',map_title=map.title, author_name=map.author, id=map_id)
 
 @app.route('/user_map', methods=["PUT"])
 def get_user_map():
