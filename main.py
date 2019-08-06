@@ -29,6 +29,8 @@ def convert_to_geojson():
 		geojson = decode_to_geojson(file.read())
 	elif lower_f_type == ".zip":
 		geojson = zipped_shp_to_geojson(file)
+	else:
+		return
 	geojson['name'] = f_name
 	return jsonify(geojson)
 

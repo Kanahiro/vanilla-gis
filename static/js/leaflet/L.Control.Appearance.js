@@ -7,7 +7,8 @@ L.Control.Appearance = L.Control.extend({
 		layerName: true,
 		opacity: false,
 		color: false,
-		remove: false
+		remove: false,
+		removeIcon: null,
 	},
 	initialize: function (baseLayers, uneditableOverlays, overlays, options) {
 		L.Util.setOptions(this, options);
@@ -33,8 +34,8 @@ L.Control.Appearance = L.Control.extend({
 	},
 	// @method addOverlay(layer: Layer, name: String): this
 	// Adds an overlay (checkbox entry) with the given name to the control.
-	addOverlay: function (layer, name, unremovable) {
-		this._addLayer(layer, name, true, unremovable);
+	addOverlay: function (layer, unremovable) {
+		this._addLayer(layer, layer.options.name, true, unremovable);
 		return (this._map) ? this._update() : this;
 	},
 	_onLayerChange: function (e) {
@@ -165,10 +166,11 @@ L.Control.Appearance = L.Control.extend({
 			if (this.options.layerName){elements.push(this._createNameElement('leaflet-control-layers-name', layerName))};
 		}
 		var holder = document.createElement('div');
+		holder.style = "display: flex; align-items: baseline;";
 		label.appendChild(holder);
 		for (var i = 0; i < elements.length; i++) {
 			holder.appendChild(elements[i]);
-			if (i == 1){continue};
+			if (i == 1){continue}; //layer name don't need UI
 			this._layerControlInputs.push(elements[i]);
 			elements[i].layerId = L.Util.stamp(obj.layer);
 			switch(elements[i].className){
@@ -232,12 +234,15 @@ L.Control.Appearance = L.Control.extend({
 		colorFragment.innerHTML = colorHtml;
 		return colorFragment.firstChild;
 	},
-	_createRemoveElement: function (name) {
+	_createRemoveElement: function (name, imgUrl) {
 		input = document.createElement('input');
 		input.type = 'checkbox';
-		input.value = '削除';
 		input.className = name;
 		input.defaultChecked = true;
+		imgUrl = this.options.removeIcon;
+		if (imgUrl){
+			input.style = "-webkit-appearance:none; background:url(" + imgUrl + "); width:1rem; height:1rem; background-size: contain;";
+		}
 		return input;
 	},
 	_onRadioCheckboxClick: function () {
@@ -287,13 +292,12 @@ L.Control.Appearance = L.Control.extend({
 			layer = this._getLayer(input.layerId).layer;
 			//undefined = overlay, not undefined = tilemap
 			if( typeof layer._url === 'undefined'){
-				var style = {"opacity":0.6,
-							"fillOpacity":0.3};
 				var rangeVal = parseFloat(parseInt(input.value / 10)/10);
-				style.opacity = rangeVal;
-				style.fillOpacity = rangeVal / 2;
+				var style = {"opacity":rangeVal,
+							"fillOpacity":(rangeVal / 2)};
 				layer.setStyle(style);
-				
+				layer.options.opacity = rangeVal;
+				layer.options.fillOpacity = rangeVal / 2;
 			}else{
 				layer.setOpacity(input.value / 100);
 			}
@@ -312,10 +316,9 @@ L.Control.Appearance = L.Control.extend({
 			layer = this._getLayer(input.layerId).layer;
 			//not tilemap
 			if( typeof layer._url === 'undefined'){
-				var style = {"color":"#000000",
-							"opacity":0.6,
-							"fillOpacity":0.3};
-				style.color = input.value;
+				var style = {"color":input.value,
+							"opacity":layer.options.opacity,
+							"fillOpacity":layer.options.fillOpacity};
 				layer.setStyle(style);
 				layer.options.color = input.value;
 			};

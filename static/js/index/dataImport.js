@@ -1,5 +1,11 @@
 //対応データ形式
 IMPORT_FILE_TYPES = ['.geojson', '.zip']
+//デフォルトのスタイル
+DEFAULT_STYLE = {
+    "weight": 1,
+    "opacity": 0.8
+};
+
 //データ対応判定
 function checkFileType(fileName){
     var filename = fileName.toLowerCase();
@@ -16,7 +22,7 @@ if (!window.File) {
 function onDragOver(event) {
     event.preventDefault();
 }
-// Drop領域にドロップした際のファイルのプロパティ情報読み取り処理
+// Drop領域にドロップした際の処理
 function onDrop(event) {
     // ブラウザ上でファイルを展開する挙動を抑止
     event.preventDefault();
@@ -27,7 +33,7 @@ function onDrop(event) {
         var name = String(files[i].name);
         //対応していないデータ形式の場合
         if (!checkFileType(name)){
-            alert(name + "の形式には対応していません。\n対応データ：" + String(FILE_TYPES));
+            alert(name + "の形式には対応していません。\n対応データ：" + String(IMPORT_FILE_TYPES));
             continue
         }
         // 一件ずつ追加
@@ -93,22 +99,18 @@ function addGeojson(geojson){
                             if (type != "Point") {
                                 var layerStyle = makeGoodStyle(type);
                                 layerStyle.color = randomColor;
-                                if (geojson.color){
-                                    layerStyle.color = geojson.color    
-                                }
-                                layer.setStyle(layerStyle); 
+                                layer.setStyle(layerStyle);
                             };
                         }
     });
-    geojsonLayer.options.color = randomColor
-    if (geojson.color){
-        geojsonLayer.options.color = geojson.color    
-    }
+    //Control.Appearanceのためにオプションを設定
     geojsonLayer.options.name = geojson.name
+    geojsonLayer.options.color = geojson.color ? geojson.color : randomColor
+    geojsonLayer.options.opacity = geojson.opacity ? geojson.opacity : DEFAULT_STYLE.opacity
 
-    map.addLayer(geojsonLayer);
     //GEOJSONレイヤーをオーバーレイレイヤーに追加
-    appearanceControl.addOverlay(geojsonLayer,geojsonLayer.options.name);
+    map.addLayer(geojsonLayer);
+    appearanceControl.addOverlay(geojsonLayer);
 
     miniWindowChanger("");
 }
@@ -116,10 +118,7 @@ function addGeojson(geojson){
 //地物ごとに最適なスタイルを返す
 function makeGoodStyle(type){
     //default
-    var style = {
-        "weight": 1,
-        "opacity": 0.8
-    };
+    var style = DEFAULT_STYLE;
     switch(type){
         case "Point":
             break;

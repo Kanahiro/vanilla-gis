@@ -56,7 +56,8 @@ L.control.scale({"imperial":false,
 //自作コントロール
 var appearanceControl = L.control.appearance(baseLayer, overlayLayer, [], {opacity:true,
                                                                         remove:true,
-                                                                        color:true});
+                                                                        color:true,
+                                                                        removeIcon:"./static/js/leaflet/img/remove_icon.png"});
 appearanceControl.addTo(map);
 
 //map title window
@@ -80,16 +81,6 @@ var titleAuthorUI = L.control.custom({
                             click: function(data)
                             {
                                 titleEdit.addTo(map);
-                            },
-                            dblclick: function(data)
-                            {
-                                console.log('wrapper div element dblclicked');
-                                console.log(data);
-                            },
-                            contextmenu: function(data)
-                            {
-                                console.log('wrapper div element contextmenu');
-                                console.log(data);
                             },
                         }
                     });
